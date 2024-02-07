@@ -1,0 +1,14 @@
+{
+  "architectures": [
+    "BriaRMBG"
+  ],
+  "auto_map": {
+    "AutoConfig": "MyConfig.RMBGConfig",
+    "AutoModelForImageSegmentation": "briarmbg.BriaRMBG"
+  },
+  "in_ch": 3,
+  "model_type": "SegformerForSemanticSegmentation",
+  "out_ch": 1,
+  "torch_dtype": "float32",
+  "transformers_version": "4.35.2"
+}
