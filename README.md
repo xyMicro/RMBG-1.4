@@ -94,8 +94,7 @@ These modifications significantly improve the model’s accuracy and effectivene
 
 ## Installation
 ```bash
-git clone https://huggingface.co/briaai/RMBG-1.4
-cd RMBG-1.4/
+wget https://huggingface.co/briaai/RMBG-1.4/resolve/main/requirements.txt
 pip install -r requirements.txt
 ```
 
