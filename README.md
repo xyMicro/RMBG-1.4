@@ -100,9 +100,6 @@ wget https://huggingface.co/briaai/RMBG-1.4/resolve/main/requirements.txt && pip
 
 ## Usage
 
-```python
-# How to use 
-
 either load the model 
 ```python
 from transformers import AutoModelForImageSegmentation
@@ -121,6 +118,5 @@ pipe("image_path",out_name="myout.png") # applies mask and saves the extracted i
 for the pipeline you can use the following parameters : 
 * `model_input_size` : default to [1024,1024]
 * `out_name` : if specified it will use the numpy mask to extract the image and save it using the `out_name`
-* `preprocess_image` : original method created by briaai
-* `postprocess_image` : original method created by briaai
-```
+* `preprocess_image` : method for preprocessing images
+* `postprocess_image` : method for postprocessing images
