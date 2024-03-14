@@ -2,7 +2,7 @@
 license: other
 license_name: bria-rmbg-1.4
 license_link: https://bria.ai/bria-huggingface-model-license-agreement/
-pipeline_tag: image-to-image
+pipeline_tag: image-segmentation
 tags:
 - remove background
 - background
@@ -10,6 +10,7 @@ tags:
 - Pytorch
 - vision
 - legal liability
+- transformers
 
 extra_gated_prompt: This model weights by BRIA AI can be obtained after a commercial license is agreed upon. Fill in the form below and we reach out to you.
 extra_gated_fields:
@@ -94,43 +95,32 @@ These modifications significantly improve the model’s accuracy and effectivene
 
 ## Installation
 ```bash
-git clone https://huggingface.co/briaai/RMBG-1.4
-cd RMBG-1.4/
-pip install -r requirements.txt
+wget https://huggingface.co/briaai/RMBG-1.4/resolve/main/requirements.txt && pip install -qr requirements.txt
 ```
 
 ## Usage
 
 ```python
-from skimage import io
-import torch, os
-from PIL import Image
-from briarmbg import BriaRMBG
-from utilities import preprocess_image, postprocess_image
+# How to use 
 
-im_path = f"{os.path.dirname(os.path.abspath(__file__))}/example_input.jpg"
+either load the model 
+```python
+from transformers import AutoModelForImageSegmentation
+model = AutoModelForImageSegmentation.from_pretrained("briaai/RMBG-1.4",trust_remote_code=True)
+```
 
-net = BriaRMBG.from_pretrained("briaai/RMBG-1.4")
+or load the pipeline
+```python
+from transformers import pipeline
+pipe = pipeline("image-segmentation", model="briaai/RMBG-1.4", trust_remote_code=True)
+numpy_mask = pipe("img_path") # outputs numpy mask
+pipe("image_path",out_name="myout.png") # applies mask and saves the extracted image as `myout.png`
+```
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-net.to(device)
-
-# prepare input
-model_input_size = [1024,1024]
-orig_im = io.imread(im_path)
-orig_im_size = orig_im.shape[0:2]
-image = preprocess_image(orig_im, model_input_size).to(device)
-
-# inference 
-result=net(image)
-
-# post process
-result_image = postprocess_image(result[0][0], orig_im_size)
-
-# save result
-pil_im = Image.fromarray(result_image)
-no_bg_image = Image.new("RGBA", pil_im.size, (0,0,0,0))
-orig_image = Image.open(im_path)
-no_bg_image.paste(orig_image, mask=pil_im)
-no_bg_image.save("example_image_no_bg.png")
+# parameters : 
+for the pipeline you can use the following parameters : 
+* `model_input_size` : default to [1024,1024]
+* `out_name` : if specified it will use the numpy mask to extract the image and save it using the `out_name`
+* `preprocess_image` : original method created by briaai
+* `postprocess_image` : original method created by briaai
 ```
