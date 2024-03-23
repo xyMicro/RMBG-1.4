@@ -110,13 +110,6 @@ or load the pipeline
 ```python
 from transformers import pipeline
 pipe = pipeline("image-segmentation", model="briaai/RMBG-1.4", trust_remote_code=True)
-numpy_mask = pipe("img_path") # outputs numpy mask
-pipe("image_path",out_name="myout.png") # applies mask and saves the extracted image as `myout.png`
+pillow_mask = pipe("img_path",return_mask = True) # outputs a pillow mask
+pillow_image = pipe("image_path") # applies mask on input and returns a pillow image
 ```
-
-# parameters : 
-for the pipeline you can use the following parameters : 
-* `model_input_size` : default to [1024,1024]
-* `out_name` : if specified it will use the numpy mask to extract the image and save it using the `out_name`
-* `preprocess_image` : method for preprocessing images
-* `postprocess_image` : method for postprocessing images

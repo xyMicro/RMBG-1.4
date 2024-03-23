@@ -1,4 +1,3 @@
-
 import torch, os
 import torch.nn.functional as F
 from torchvision.transforms.functional import normalize
@@ -20,8 +19,8 @@ class RMBGPipe(Pipeline):
     postprocess_kwargs = {}
     if "model_input_size" in kwargs : 
       preprocess_kwargs["model_input_size"] = kwargs["model_input_size"]
-    if "out_name" in kwargs: 
-      postprocess_kwargs["out_name"] = kwargs["out_name"]
+    if "return_mask" in kwargs: 
+      postprocess_kwargs["return_mask"] = kwargs["return_mask"]
     return preprocess_kwargs, {}, postprocess_kwargs
 
   def preprocess(self,im_path:str,model_input_size: list=[1024,1024]):
@@ -40,21 +39,19 @@ class RMBGPipe(Pipeline):
     result = self.model(inputs.pop("image"))
     inputs["result"] = result
     return inputs
-  def postprocess(self,inputs,out_name = ""):
+  def postprocess(self,inputs,return_mask:bool=False ):
     result = inputs.pop("result")
     orig_im_size = inputs.pop("orig_im_size")
     im_path = inputs.pop("im_path")
     result_image = self.postprocess_image(result[0][0], orig_im_size)
-    if out_name != "" : 
-      # if out_name is specified we save the image using that name
-      pil_im = Image.fromarray(result_image)
-      no_bg_image = Image.new("RGBA", pil_im.size, (0,0,0,0))
-      orig_image = Image.open(im_path)
-      no_bg_image.paste(orig_image, mask=pil_im)
-      no_bg_image.save(out_name)
-    else : 
-      return result_image
-
+    pil_im = Image.fromarray(result_image)
+    if return_mask ==True : 
+      return pil_im
+    no_bg_image = Image.new("RGBA", pil_im.size, (0,0,0,0))
+    orig_image = Image.open(im_path)
+    no_bg_image.paste(orig_image, mask=pil_im)
+    return no_bg_image
+    
   # utilities functions
   def preprocess_image(self,im: np.ndarray, model_input_size: list=[1024,1024]) -> torch.Tensor:
     # same as utilities.py with minor modification

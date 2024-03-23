@@ -5,4 +5,4 @@ numpy
 typing
 scikit-image
 huggingface_hub
-git+https://github.com/huggingface/transformers.git
+transformers==4.39.1
