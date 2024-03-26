@@ -95,7 +95,7 @@ These modifications significantly improve the model’s accuracy and effectivene
 
 ## Installation
 ```bash
-wget https://huggingface.co/briaai/RMBG-1.4/resolve/main/requirements.txt && pip install -qr requirements.txt
+pip install -qr https://huggingface.co/briaai/RMBG-1.4/resolve/main/requirements.txt
 ```
 
 ## Usage
