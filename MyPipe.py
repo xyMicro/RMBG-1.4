@@ -9,7 +9,7 @@ from PIL import Image
 class RMBGPipe(Pipeline):
   def __init__(self,**kwargs):
     Pipeline.__init__(self,**kwargs)
-    self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     self.model.to(self.device)
     self.model.eval()
 
@@ -39,6 +39,7 @@ class RMBGPipe(Pipeline):
     result = self.model(inputs.pop("image"))
     inputs["result"] = result
     return inputs
+  
   def postprocess(self,inputs,return_mask:bool=False ):
     result = inputs.pop("result")
     orig_im_size = inputs.pop("orig_im_size")
@@ -48,7 +49,7 @@ class RMBGPipe(Pipeline):
     if return_mask ==True : 
       return pil_im
     no_bg_image = Image.new("RGBA", pil_im.size, (0,0,0,0))
-    orig_image = Image.open(im_path)
+    orig_image = Image.fromarray(io.imread(im_path))
     no_bg_image.paste(orig_image, mask=pil_im)
     return no_bg_image
     
@@ -59,10 +60,11 @@ class RMBGPipe(Pipeline):
         im = im[:, :, np.newaxis]
     # orig_im_size=im.shape[0:2]
     im_tensor = torch.tensor(im, dtype=torch.float32).permute(2,0,1)
-    im_tensor = F.interpolate(torch.unsqueeze(im_tensor,0), size=model_input_size, mode='bilinear').type(torch.uint8)
+    im_tensor = F.interpolate(torch.unsqueeze(im_tensor,0), size=model_input_size, mode='bilinear')
     image = torch.divide(im_tensor,255.0)
     image = normalize(image,[0.5,0.5,0.5],[1.0,1.0,1.0])
     return image
+  
   def postprocess_image(self,result: torch.Tensor, im_size: list)-> np.ndarray:
       result = torch.squeeze(F.interpolate(result, size=im_size, mode='bilinear') ,0)
       ma = torch.max(result)
