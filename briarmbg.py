@@ -348,7 +348,7 @@ class myrebnconv(nn.Module):
 
 class BriaRMBG(PreTrainedModel):
     config_class = RMBGConfig    
-    def __init__(self,config):
+    def __init__(self,config:RMBGConfig = RMBGConfig()):
         super().__init__(config)
         in_ch = config.in_ch # 3
         out_ch = config.out_ch # 1
