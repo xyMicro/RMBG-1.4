@@ -105,7 +105,7 @@ Either load the pipeline
 from transformers import pipeline
 image_path = "https://farm5.staticflickr.com/4007/4322154488_997e69e4cf_z.jpg"
 pipe = pipeline("image-segmentation", model="briaai/RMBG-1.4", trust_remote_code=True)
-pillow_mask = pipe(img_path, return_mask = True) # outputs a pillow mask
+pillow_mask = pipe(image_path, return_mask = True) # outputs a pillow mask
 pillow_image = pipe(image_path) # applies mask on input and returns a pillow image
 ```
 
@@ -137,7 +137,7 @@ model.to(device)
 
 # prepare input
 image_path = "https://farm5.staticflickr.com/4007/4322154488_997e69e4cf_z.jpg"
-orig_im = io.imread(im_path)
+orig_im = io.imread(image_path)
 orig_im_size = orig_im.shape[0:2]
 image = preprocess_image(orig_im, model_input_size).to(device)
 
@@ -150,7 +150,7 @@ result_image = postprocess_image(result[0][0], orig_im_size)
 # save result
 pil_im = Image.fromarray(result_image)
 no_bg_image = Image.new("RGBA", pil_im.size, (0,0,0,0))
-orig_image = Image.open(im_path)
+orig_image = Image.open(image_path)
 no_bg_image.paste(orig_image, mask=pil_im)
 ```
 
