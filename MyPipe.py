@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from torchvision.transforms.functional import normalize
 import numpy as np
 from transformers import Pipeline
+from transformers.image_utils import load_image
 from skimage import io
 from PIL import Image
 
@@ -23,34 +24,35 @@ class RMBGPipe(Pipeline):
       postprocess_kwargs["return_mask"] = kwargs["return_mask"]
     return preprocess_kwargs, {}, postprocess_kwargs
 
-  def preprocess(self,im_path:str,model_input_size: list=[1024,1024]):
+  def preprocess(self,input_image,model_input_size: list=[1024,1024]):
       # preprocess the input 
-      orig_im = io.imread(im_path)
+      orig_im = load_image(input_image)
+      orig_im = np.array(orig_im)
       orig_im_size = orig_im.shape[0:2]
-      image = self.preprocess_image(orig_im, model_input_size).to(self.device)
+      preprocessed_image = self.preprocess_image(orig_im, model_input_size).to(self.device)
       inputs = {
-          "image":image,
+          "preprocessed_image":preprocessed_image,
           "orig_im_size":orig_im_size,
-          "im_path" : im_path
+          "input_image" : input_image
       }
       return inputs
 
   def _forward(self,inputs):
-    result = self.model(inputs.pop("image"))
+    result = self.model(inputs.pop("preprocessed_image"))
     inputs["result"] = result
     return inputs
   
   def postprocess(self,inputs,return_mask:bool=False ):
     result = inputs.pop("result")
     orig_im_size = inputs.pop("orig_im_size")
-    im_path = inputs.pop("im_path")
+    input_image = inputs.pop("input_image")
     result_image = self.postprocess_image(result[0][0], orig_im_size)
     pil_im = Image.fromarray(result_image)
     if return_mask ==True : 
       return pil_im
     no_bg_image = Image.new("RGBA", pil_im.size, (0,0,0,0))
-    orig_image = Image.fromarray(io.imread(im_path))
-    no_bg_image.paste(orig_image, mask=pil_im)
+    input_image = load_image(input_image)
+    no_bg_image.paste(input_image, mask=pil_im)
     return no_bg_image
     
   # utilities functions
@@ -58,7 +60,6 @@ class RMBGPipe(Pipeline):
     # same as utilities.py with minor modification
     if len(im.shape) < 3:
         im = im[:, :, np.newaxis]
-    # orig_im_size=im.shape[0:2]
     im_tensor = torch.tensor(im, dtype=torch.float32).permute(2,0,1)
     im_tensor = F.interpolate(torch.unsqueeze(im_tensor,0), size=model_input_size, mode='bilinear')
     image = torch.divide(im_tensor,255.0)
