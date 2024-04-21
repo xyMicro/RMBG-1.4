@@ -112,6 +112,7 @@ pillow_image = pipe(image_path) # applies mask on input and returns a pillow ima
 Or load the model 
 ```python
 from transformers import AutoModelForImageSegmentation
+from torchvision.transforms.functional import normalize
 model = AutoModelForImageSegmentation.from_pretrained("briaai/RMBG-1.4",trust_remote_code=True)
 def preprocess_image(im: np.ndarray, model_input_size: list) -> torch.Tensor:
     if len(im.shape) < 3:
