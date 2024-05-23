@@ -12,7 +12,8 @@ tags:
 - legal liability
 - transformers
 
-extra_gated_prompt: This model weights by BRIA AI can be obtained after a commercial license is agreed upon. Fill in the form below and we reach out to you.
+extra_gated_description: RMBG v1.4 is available as a source-available model for non-commercial use
+extra_gated_heading: "Fill in this form to get instant access"
 extra_gated_fields:
   Name: text
   Company/Org name: text
@@ -21,6 +22,7 @@ extra_gated_fields:
   Country: text
   Email: text
   By submitting this form, I agree to BRIA’s Privacy policy and Terms & conditions, see links below: checkbox
+  I agree to receive marketing information, updates, and promotional offers from Bria AI via email: checkbox
 ---
 
 # BRIA Background Removal v1.4 Model Card
