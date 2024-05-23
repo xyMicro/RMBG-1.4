@@ -22,7 +22,6 @@ extra_gated_fields:
   Country: text
   Email: text
   By submitting this form, I agree to BRIA’s Privacy policy and Terms & conditions, see links below: checkbox
-  I agree to receive marketing information, updates, and promotional offers from Bria AI via email: checkbox
 ---
 
 # BRIA Background Removal v1.4 Model Card
